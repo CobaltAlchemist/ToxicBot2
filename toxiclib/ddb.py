@@ -70,15 +70,3 @@ class DiscordDatabase:
 	@staticmethod
 	def _full_user(user : User):
 		return f"{user.name}#{user.discriminator}"
-
-	@staticmethod
-	def _load_data(file, columns):
-		dirpath = os.path.dirname(file)
-		if not os.path.exists(dirpath):
-			os.makedirs(dirpath)
-		if os.path.exists(file) and os.path.isfile(file):
-			data = pd.read_csv(file)
-		else:
-			data = pd.DataFrame(columns=columns)
-			data.to_csv(file, index=False)
-		return data

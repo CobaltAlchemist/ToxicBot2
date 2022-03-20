@@ -27,6 +27,8 @@ class ToxicCog(commands.Cog, name="Main Commands"):
 			return
 		if len(message.content) == 0:
 			return
+		if message.content[0] == self.bot.command_prefix:
+			return
 		await self.user_messages(message)
 		preds = self.predictor(message.content)
 		await self.db.add_message(message, preds)
