@@ -32,7 +32,7 @@ class ToxicCog(commands.Cog, name="Main Commands"):
 		if message.content[0] == self.bot.command_prefix:
 			return
 		await self.user_messages(message)
-		preds = self.predictor(message.content)
+		preds = await self.predictor(message.content)
 		await self.db.add_message(message, preds)
 		if np.sum(preds > 0.5) >= 4:
 			await message.channel.send(choice(self.config['toxic']))
@@ -54,7 +54,7 @@ class ToxicCog(commands.Cog, name="Main Commands"):
 
 	@commands.command()
 	async def rate(self, ctx: commands.Context, *s : str):
-		ratings = self.predictor(' '.join(s))
+		ratings = await self.predictor(' '.join(s))
 		print(' '.join(s))
 		fmt = '\n'.join([f"\t{c}: {p*100:.2f}%" for c, p in zip(TOXCLASSES_HUMAN, ratings)])
 		await ctx.send(f"I rate the message:\n{fmt}")
@@ -69,7 +69,7 @@ class ToxicCog(commands.Cog, name="Main Commands"):
 		if last_message is None:
 			await ctx.send(f"Sorry {user.name}, I didn't find your last message here")
 			return
-		preds = self.predictor(last_message)
+		preds = await self.predictor(last_message)
 		if len(last_message) > 100:
 			last_message = last_message[:97] + "..."
 		s = f"Your last message, {user.name} '{last_message}' was rated:\n\t"
@@ -90,7 +90,7 @@ class ToxicCog(commands.Cog, name="Main Commands"):
 	@commands.command()
 	async def tokens(self, ctx: commands.Context, *s):
 		s = ' '.join(s)
-		toks = self.predictor.tokenize_text(s)
+		toks = await self.predictor.tokenize_text(s)
 		await ctx.send(f"Got the following tokens for that: {', '.join(toks)}")
 
 	@commands.command()
@@ -117,7 +117,7 @@ class ToxicCog(commands.Cog, name="Main Commands"):
 		s = ""
 		totals = np.array([stats[c] for c in TOXCLASSES_ORIG])
 		s += f"For {name} I found the following:\n" \
-			f"\t Toxic incidents: {stats['incidents']} / {stats['total_seen']} aka {100 * stats['incidents'] / stats['total_seen']:.2f}% rate\n"\
+			f"\t Toxic incidents: {stats['incidents']} / {stats['total_seen']}, {100 * stats['incidents'] / stats['total_seen']:.2f}% toxic\n"\
 			f"\tFavorite form of toxicity (unweighted... for now): {TOXCLASSES_HUMAN[np.argmax(totals)]}\n"\
 			f"\tIncidents by category:\n\t\t"
 		s += '\n\t\t'.join([f"{c}: {v}" for c, v in zip(TOXCLASSES_HUMAN, totals)]) + "\n"

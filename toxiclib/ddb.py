@@ -59,9 +59,9 @@ class DiscordDatabase:
 					f" WHERE guild={message.guild.id} AND author={message.author.id}"
 				self.dbcon.execute(execstr)
 				self.dbcon.execute("INSERT INTO history (guild, author, " + ', '.join(TOXCLASSES_ORIG) +\
-				   ") VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)", (message.guild.id, message.author.id, *[str(x) for x in toxpreds]))
+					") VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)", (message.guild.id, message.author.id, *[str(x) for x in toxpreds]))
 			self.dbcon.execute("INSERT OR IGNORE INTO last_messages (guild, author, channel) VALUES (?, ?, ?)",
-					  (message.guild.id, message.author.id, message.channel.id))
+						(message.guild.id, message.author.id, message.channel.id))
 			execstr = f'UPDATE last_messages SET text="{message.content}" ' + \
 				f"WHERE guild={message.guild.id} AND author={message.author.id} AND channel={message.channel.id}"
 			self.dbcon.execute(execstr)
