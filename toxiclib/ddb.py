@@ -20,6 +20,8 @@ class DiscordDatabase:
 		self.usercols = ['incidents', 'total_seen'] + TOXCLASSES_ORIG
 
 	def user_data(self, user : User, guild : Guild = None):
+		if user is None:
+			return None
 		s = "SELECT " + self._all_usercols(guild is None)
 		s += f" FROM users WHERE author={user.id} "
 		if guild is None:
@@ -30,12 +32,16 @@ class DiscordDatabase:
 		return {k: v for k, v in zip(self.usercols, data)}
 
 	def guild_data(self, guild : Guild):
+		if guild is None:
+			return None
 		s = "SELECT " + self._all_usercols(True) + \
 			f"FROM users WHERE guild={guild.id} GROUP BY guild"
 		data = self.dbcursor.execute(s).fetchone()
 		return {k: v for k, v in zip(self.usercols, data)}
 
 	def last_message(self, guild : Guild, channel : TextChannel, user : User):
+		if guild is None or channel is None or user is None:
+			return None
 		s = f"SELECT text FROM last_messages WHERE guild={guild.id} AND channel={channel.id} AND author={user.id}"
 		data = self.dbcursor.execute(s).fetchone()
 		if data is None:

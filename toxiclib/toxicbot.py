@@ -28,7 +28,7 @@ class ToxicCog(commands.Cog, name="Main Commands"):
 		if len(message.content) == 0:
 			return
 		if message.content[0] == self.bot.command_prefix:
-			return
+			return message.delete()
 		await self.user_messages(message)
 		preds = self.predictor(message.content)
 		await self.db.add_message(message, preds)
@@ -49,22 +49,6 @@ class ToxicCog(commands.Cog, name="Main Commands"):
 	
 		if reaction.emoji in ['🎖', '🏅', '🥇'] and uniform(0, 1) < 0.1:
 			await message.channel.send('Thanks for the gold, kind stranger!')
-
-	async def user_messages(self, message : discord.Message):
-		user_config = self.config['user']
-		resps = []
-		resps.extend(user_config['all'])
-		p = user_config['p_default']
-		id_str = str(message.author.id)
-		if id_str in user_config:
-			user_config = user_config[id_str]
-			if 'p' in user_config:
-				p = user_config['p']
-			resps.extend(user_config['resps'])
-		if uniform(0, 1) < p:
-			await message.channel.send(choice(resps))
-			return True
-		return False
 
 	@commands.command()
 	async def rate(self, ctx: commands.Context, *s : str):
@@ -90,16 +74,6 @@ class ToxicCog(commands.Cog, name="Main Commands"):
 		s += '\n\t'.join([f"{c}: {p*100:.2f}%" for c, p in zip(TOXCLASSES_HUMAN, preds)])
 		await ctx.send(s)
 
-	def _format_stats(self, name, stats):
-		s = ""
-		totals = np.array([stats[c] for c in TOXCLASSES_ORIG])
-		s += f"For {name} I found the following:\n" \
-			f"\t Toxic incidents: {stats['incidents']} / {stats['total_seen']} aka {100 * stats['incidents'] / stats['total_seen']:.2f}% rate\n"\
-			f"\tFavorite form of toxicity (unweighted... for now): {TOXCLASSES_HUMAN[np.argmax(totals)]}\n"\
-			f"\tIncidents by category:\n\t\t"
-		s += '\n\t\t'.join([f"{c}: {v}" for c, v in zip(TOXCLASSES_HUMAN, totals)]) + "\n"
-		return s
-
 	@commands.command()
 	async def stats(self, ctx: commands.Context):
 		s = ""
@@ -120,6 +94,32 @@ class ToxicCog(commands.Cog, name="Main Commands"):
 	@commands.command()
 	async def ping(self, ctx: commands.Context):
 		await ctx.send(f"Pong! {round(self.bot.latency * 1000)}ms")
+
+	async def user_messages(self, message : discord.Message):
+		user_config = self.config['user']
+		resps = []
+		resps.extend(user_config['all'])
+		p = user_config['p_default']
+		id_str = str(message.author.id)
+		if id_str in user_config:
+			user_config = user_config[id_str]
+			if 'p' in user_config:
+				p = user_config['p']
+			resps.extend(user_config['resps'])
+		if uniform(0, 1) < p:
+			await message.channel.send(choice(resps))
+			return True
+		return False
+
+	def _format_stats(self, name, stats):
+		s = ""
+		totals = np.array([stats[c] for c in TOXCLASSES_ORIG])
+		s += f"For {name} I found the following:\n" \
+			f"\t Toxic incidents: {stats['incidents']} / {stats['total_seen']} aka {100 * stats['incidents'] / stats['total_seen']:.2f}% rate\n"\
+			f"\tFavorite form of toxicity (unweighted... for now): {TOXCLASSES_HUMAN[np.argmax(totals)]}\n"\
+			f"\tIncidents by category:\n\t\t"
+		s += '\n\t\t'.join([f"{c}: {v}" for c, v in zip(TOXCLASSES_HUMAN, totals)]) + "\n"
+		return s
 
 def ToxicBot(prefix='%', **kwargs):
 	bot = commands.Bot(
