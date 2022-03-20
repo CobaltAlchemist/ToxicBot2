@@ -23,6 +23,8 @@ class ToxicCog(commands.Cog, name="Main Commands"):
 	async def on_message(self, message: discord.Message):
 		if message.author.id == self.bot.user.id:
 			return
+		if message.author.bot:
+			return
 		if message.guild is None:
 			return
 		if len(message.content) == 0:
