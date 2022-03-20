@@ -1,0 +1,49 @@
+{
+	"toxic": [
+		"Bro chill",
+		"Hey that's uncalled for!",
+		"Lol good one",
+		"Be kind to others",
+		"Why are you so mean?",
+		"Try to be better"
+	],
+	"apology": [
+		"It's ok I forgive you",
+		"You went a little too far this time... but I forgive you",
+		"Ok.",
+		"It's alright buddy, we all have bad days",
+		"I don't forgive you, but I'm proud of you for accepting responsibility",
+		"Sorries are cheap, show me with your actions",
+		"I know you're better than that, so I'll overlook this for now"
+	],
+	"user": {
+		"all": [],
+		"p_default": 0.2,
+		"503720029456695306": {
+			"_name_": "dadbot",
+			"resps": [
+				"Literally do anything else other than select a random response when seeing the word 'play'",
+				"Nobody asked you, dad"
+			]
+		},
+		"605864767915294730": {
+			"_name_": "mombot",
+			"p": 0.4,
+			"resps": [
+				"AHAHAHA GET IT BECAUSE SHE'S A BOOMER THAT'S FUNNY",
+				"Literally no one:\nMom bot: ^",
+				"Nobody is talking to you, mom bot",
+				"You're a waste of electricity and a blight on this planet, mombot"
+			]
+		},
+		"654482349353992202": {
+			"_name_": "dombot",
+			"p": 0.4,
+			"resps": [
+				"xd get it because family",
+				"shut up you useless advertisement",
+				"Hey dom bot, Family"
+			]
+		}
+	}
+}

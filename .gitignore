@@ -112,3 +112,13 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+*.csv
+
+.vs/
+*.ipynb
+model/
+models/
+wandb/
+*.db
+resp_config.json
+*.bat
