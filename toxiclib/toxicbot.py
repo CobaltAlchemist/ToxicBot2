@@ -30,7 +30,7 @@ class ToxicCog(commands.Cog, name="Main Commands"):
 		if len(message.content) == 0:
 			return
 		if message.content[0] == self.bot.command_prefix:
-			return message.delete()
+			return
 		await self.user_messages(message)
 		preds = self.predictor(message.content)
 		await self.db.add_message(message, preds)
@@ -108,9 +108,9 @@ class ToxicCog(commands.Cog, name="Main Commands"):
 			if 'p' in user_config:
 				p = user_config['p']
 			resps.extend(user_config['resps'])
-		if uniform(0, 1) < p:
-			await message.channel.send(choice(resps))
-			return True
+			if resps and uniform(0, 1) < p:
+				await message.channel.send(choice(resps))
+				return True
 		return False
 
 	def _format_stats(self, name, stats):
