@@ -133,14 +133,3 @@ def ToxicBot(prefix='%', **kwargs):
 		config = json.load(f)
 	bot.add_cog((ToxicCog(bot, db, config, **kwargs)))
 	return bot
-	
-	async def message(self, message):
-		if message.author.id == self.user.id:
-			return
-		if len(message.content) == 0:
-			return
-			
-		s_guild = str(message.guild)
-		s_author = str(message.author)
-		s = message.content
-		return await super().on_message(message)
