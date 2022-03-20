@@ -126,7 +126,7 @@ def ToxicBot(prefix='%', **kwargs):
 			prefix,
 			case_insensitive=True,
 			description="Bot for identifying toxic comments",
-			activity=discord.Game("New and improved! | %help")
+			activity=discord.Game("TB 2.0! | %help")
 		)
 	db = DiscordDatabase('db')
 	with open('resp_config.json') as f:
