@@ -117,7 +117,7 @@ class ToxicCog(commands.Cog, name="Main Commands"):
 		s = ""
 		totals = np.array([stats[c] for c in TOXCLASSES_ORIG])
 		s += f"For {name} I found the following:\n" \
-			f"\t Toxic incidents: {stats['incidents']} / {stats['total_seen']}, {100 * stats['incidents'] / stats['total_seen']:.2f}% toxic\n"\
+			f"\t Toxic incidents: {stats['incidents']}/{stats['total_seen']}, {100 * stats['incidents'] / stats['total_seen']:.1f}% toxic\n"\
 			f"\tFavorite form of toxicity (unweighted... for now): {TOXCLASSES_HUMAN[np.argmax(totals)]}\n"\
 			f"\tIncidents by category:\n\t\t"
 		s += '\n\t\t'.join([f"{c}: {v}" for c, v in zip(TOXCLASSES_HUMAN, totals)]) + "\n"
