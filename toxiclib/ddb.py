@@ -16,7 +16,7 @@ class DiscordDatabase:
 		self.dbcursor = self.dbcon.cursor()
 		with open('schema_script.sql') as script:
 			self.dbcursor.executescript(script.read())
-		self.writelock = Lock()
+		self.lock = Lock()
 		self.usercols = ['incidents', 'total_seen'] + TOXCLASSES_ORIG
 
 	def user_data(self, user : User, guild : Guild = None):
@@ -49,7 +49,7 @@ class DiscordDatabase:
 		return data[0]
 
 	async def add_message(self, message : Message, toxpreds):
-		async with self.writelock:
+		async with self.lock:
 			fulluser = DiscordDatabase._full_user(message.author)
 			self.dbcon.execute("INSERT OR IGNORE INTO users (guild, author) VALUES (?, ?)", (message.guild.id, message.author.id))
 			self.dbcon.execute(f"UPDATE users SET total_seen = total_seen + 1 WHERE guild={message.guild.id} AND author={message.author.id}")

@@ -93,4 +93,4 @@ if __name__ == "__main__":
 		compute_metrics=metric,
 	)
 	
-	trainer.train("models\Roberta Fine Tuned New\checkpoint-45500")
+	trainer.train("models\Roberta Fine Tuned New\checkpoint-47500")
