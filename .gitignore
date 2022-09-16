@@ -122,3 +122,6 @@ wandb/
 *.db
 resp_config.json
 *.bat
+*.zip
+*.gz
+*.tar

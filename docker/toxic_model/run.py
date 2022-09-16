@@ -5,6 +5,10 @@ import os
 import torch
 
 classes = ['Toxic','Severely Toxic','Obscene','Identity Attack','Insult','Threat','Sexually Explicit']
+try:
+	modeldir = os.environ['MODEL_DIR']
+except KeyError:
+	modeldir = '/model'
 
 class Predictor:
 	def __init__(self, model_dir='.', device='cpu'):
@@ -19,8 +23,8 @@ class Predictor:
 
 	def predict_text(self, s : str, logits : bool = False):
 		with torch.no_grad():
-			x = self.model(**self.tokenize_text(s))
-		x = x.logits[0]
+			x = self.model(**self.tokenize_text([s, s.upper(), s.lower()]))
+		x = x.logits.max(0)
 		if not logits:
 			x = torch.sigmoid(x)
 		return x.cpu()
@@ -31,17 +35,27 @@ class Predictor:
 
 	def __call__(self, s : str, **kwargs):
 		return self.predict_text(s, **kwargs)
-	
-if __name__ == "__main__":
+		
+def create_app():
 	app = Flask(__name__)
 	device = 'cuda' if torch.cuda.is_available() else 'cpu'
-	p = Predictor('model', device=device)
+	p = Predictor('/model', device=device)
 	
 	@app.route("/")
 	def base():
 		return "<p>Running</>"
 		
 	@app.route("/predict", methods=['GET', 'POST'])
-	def predict(name):
-		s = content['text']
+	def predict():
+		s = request.json['text']
 		return jsonify({k: v.item() for k, v in zip(classes, p(s))})
+		
+	@app.route("/tokens", methods=['GET', 'POST'])
+	def tokens():
+		s = request.json['text']
+		return jsonify({'tokens': ', '.join(p.tokenizer.tokenize(s))})
+		
+	return app
+	
+if __name__ == "__main__":
+	app = create_app()

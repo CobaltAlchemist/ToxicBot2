@@ -12,9 +12,11 @@ class DiscordDatabase:
 	def __init__(self, directory : str):
 		self.directory = directory
 		runscript = True
-		self.dbcon = sqlite3.connect('toxic.db')
+		db_path = os.path.join(directory, 'toxic.db')
+		print("opening database at", db_path)
+		self.dbcon = sqlite3.connect(db_path)
 		self.dbcursor = self.dbcon.cursor()
-		with open('schema_script.sql') as script:
+		with open(os.path.join(directory, 'schema_script.sql')) as script:
 			self.dbcursor.executescript(script.read())
 		self.lock = Lock()
 		self.usercols = ['incidents', 'total_seen'] + TOXCLASSES_ORIG

@@ -5,6 +5,7 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 import torch.utils.data as tdata
+import torch.utils.data as tdata
 import wandb
 from transformers import RobertaTokenizer, RobertaForSequenceClassification, TrainingArguments, Trainer, DataCollatorWithPadding
 from datasets import load_metric
@@ -26,10 +27,10 @@ class ToxicDatasetBert(tdata.Dataset):
 		x['input_ids'] = torch.tensor(x['input_ids'], dtype=torch.long)
 		x['attention_mask'] = torch.tensor(x['attention_mask'], dtype=torch.long)
 		toxicity = torch.tensor(row[self.toxcols], dtype=torch.float)
-		hate = torch.tensor(row[self.hatecols].fillna(0), dtype=torch.float)
+		#hate = torch.tensor(row[self.hatecols].fillna(0), dtype=torch.float)
 		#emojis = torch.tensor(row[self.emojis], dtype=torch.int32)
-		hatemask = torch.tensor(~row[self.hatecols].isna())
-		return {**x, 'labels':torch.cat((toxicity, hate), dim=1)}#, hate, hatemask, emojis)
+		#hatemask = torch.tensor(~row[self.hatecols].isna())
+		return {**x, 'labels':toxicity}#, hate, hatemask, emojis)
 		
 def all_metrics(eval_pred):
     logits, labels = eval_pred
@@ -48,9 +49,9 @@ def all_metrics(eval_pred):
     return ret
 
 if __name__ == "__main__":
-	tokenizer = RobertaTokenizer.from_pretrained('roberta-base', use_fast=False)
+	tokenizer = RobertaTokenizer.from_pretrained('roberta-large', use_fast=False)
 	model = RobertaForSequenceClassification.from_pretrained(
-		"roberta-base",
+		"roberta-large",
 		num_labels=7,
 		problem_type="multi_label_classification"
 	)
@@ -60,15 +61,15 @@ if __name__ == "__main__":
 	vset, tset = tdata.random_split(dset, [len(dset) // 10, len(dset) - len(dset) // 10])
 	
 	training_args = TrainingArguments(
-		output_dir="./models/Roberta1e",
+		output_dir="./models/RobertaLarge2e",
 		learning_rate=5e-5,
-		per_device_train_batch_size=64,
-		gradient_accumulation_steps=1,
-		per_device_eval_batch_size=512,
+		per_device_train_batch_size=16,
+		gradient_accumulation_steps=4,
+		per_device_eval_batch_size=256,
 		num_train_epochs=2,
 		save_strategy='epoch',
 		evaluation_strategy='epoch',
-		dataloader_num_workers=8,
+		dataloader_num_workers=4,
 		weight_decay=0.01,
 		bf16=True,
 		tf32=True,
